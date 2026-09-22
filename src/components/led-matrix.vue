@@ -10,62 +10,29 @@ import {
   layers,
   moveLayerOrigin,
   paintLayerCell,
-  resizeLayer,
   selectedLayer,
   selectedLayerId,
   toolColor,
+  toolHeight,
   toolText,
-  type Layer,
+  toolWidth,
 } from '../scripts/led-document'
 import { LED_COLUMNS, LED_COUNT, cellFromIndex } from '../scripts/led-matrix'
-import { normalizeRect, rasterizeLayer } from '../scripts/rasterize'
+import { rasterizeLayer } from '../scripts/rasterize'
 
 const UNLIT_CSS = 'oklch(26% 0.01 260)'
 
 interface DragState {
-  mode: 'paint' | 'circle' | 'square' | 'move' | 'resize'
+  mode: 'paint'
   startCol: number
   startRow: number
   currentCol: number
   currentRow: number
-  moveOriginCol: number
-  moveOriginRow: number
 }
 
 const drag = ref<DragState | null>(null)
 
-const previewLayer = computed<Layer | null>(() => {
-  if (!drag.value) return null
-  if (drag.value.mode === 'circle' || drag.value.mode === 'square') {
-    const rect = normalizeRect(
-      drag.value.startCol,
-      drag.value.startRow,
-      drag.value.currentCol,
-      drag.value.currentRow,
-    )
-    return {
-      id: 'preview',
-      name: 'Preview',
-      kind: drag.value.mode,
-      visible: true,
-      color: { ...toolColor.value },
-      originCol: rect.originCol,
-      originRow: rect.originRow,
-      width: rect.width,
-      height: rect.height,
-      text: '',
-      overrides: {},
-    }
-  }
-  return null
-})
-
-const composited = computed(() => {
-  const preview = previewLayer.value
-  return preview
-    ? compositeLayers([...layers.value, preview])
-    : compositeLayers(layers.value)
-})
+const composited = computed(() => compositeLayers(layers.value))
 
 const selectedCoverage = computed(() => {
   const layer = selectedLayer.value
@@ -121,8 +88,6 @@ function onPointerDown(event: PointerEvent): void {
       startRow: cell.row,
       currentCol: cell.col,
       currentRow: cell.row,
-      moveOriginCol: 0,
-      moveOriginRow: 0,
     }
     paintAt(cell.col, cell.row)
     return
@@ -134,42 +99,24 @@ function onPointerDown(event: PointerEvent): void {
   }
 
   if (tool === 'circle' || tool === 'square') {
-    drag.value = {
-      mode: tool,
-      startCol: cell.col,
-      startRow: cell.row,
-      currentCol: cell.col,
-      currentRow: cell.row,
-      moveOriginCol: 0,
-      moveOriginRow: 0,
-    }
+    createShapeLayer(tool, cell.col, cell.row, toolWidth.value, toolHeight.value)
     return
   }
 
-  if (tool === 'move' && layer && layer.kind !== 'background') {
-    drag.value = {
-      mode: 'move',
-      startCol: cell.col,
-      startRow: cell.row,
-      currentCol: cell.col,
-      currentRow: cell.row,
-      moveOriginCol: layer.originCol,
-      moveOriginRow: layer.originRow,
+  if (tool === 'move') {
+    if (layer && layer.kind !== 'background') {
+      moveLayerOrigin(layer.id, cell.col, cell.row)
     }
     return
   }
+}
 
-  if (tool === 'resize' && layer && (layer.kind === 'circle' || layer.kind === 'square')) {
-    drag.value = {
-      mode: 'resize',
-      startCol: cell.col,
-      startRow: cell.row,
-      currentCol: cell.col,
-      currentRow: cell.row,
-      moveOriginCol: layer.originCol,
-      moveOriginRow: layer.originRow,
-    }
-  }
+function isMoveOrigin(index: number): boolean {
+  if (activeTool.value !== 'move') return false
+  const layer = selectedLayer.value
+  if (!layer || layer.kind === 'background') return false
+  const { col, row } = cellFromIndex(index)
+  return col === layer.originCol && row === layer.originRow
 }
 
 function onPointerMove(event: PointerEvent): void {
@@ -185,44 +132,10 @@ function onPointerMove(event: PointerEvent): void {
 
   if (drag.value.mode === 'paint') {
     paintAt(cell.col, cell.row)
-    return
-  }
-
-  if (drag.value.mode === 'move') {
-    const deltaCol = cell.col - drag.value.startCol
-    const deltaRow = cell.row - drag.value.startRow
-    moveLayerOrigin(
-      selectedLayerId.value,
-      drag.value.moveOriginCol + deltaCol,
-      drag.value.moveOriginRow + deltaRow,
-    )
-    return
-  }
-
-  if (drag.value.mode === 'resize') {
-    const rect = normalizeRect(
-      drag.value.moveOriginCol,
-      drag.value.moveOriginRow,
-      cell.col,
-      cell.row,
-    )
-    resizeLayer(selectedLayerId.value, rect.originCol, rect.originRow, rect.width, rect.height)
   }
 }
 
 function onPointerUp(): void {
-  if (!drag.value) return
-
-  if (drag.value.mode === 'circle' || drag.value.mode === 'square') {
-    const rect = normalizeRect(
-      drag.value.startCol,
-      drag.value.startRow,
-      drag.value.currentCol,
-      drag.value.currentRow,
-    )
-    createShapeLayer(drag.value.mode, rect.originCol, rect.originRow, rect.width, rect.height)
-  }
-
   drag.value = null
 }
 
@@ -247,6 +160,7 @@ function onPointerCancel(): void {
         v-for="index in LED_COUNT"
         :key="index - 1"
         class="led"
+        :class="{ 'led--move-origin': isMoveOrigin(index - 1) }"
         :data-led-index="index - 1"
         :style="ledStyle(index - 1)"
       />
@@ -270,7 +184,17 @@ function onPointerCancel(): void {
   border-radius: 50%;
   background-color: oklch(26% 0.01 260);
   box-shadow: inset 0 0 0 1px oklch(100% 0 0 / 8%);
-  /* cursor: crosshair; */
+}
+
+.led--move-origin::before {
+  content: "";
+  position: absolute;
+  inset: 20%;
+  background:
+    linear-gradient(oklch(100% 0 0) 0 0) 50% 50% / 100% 2px no-repeat,
+    linear-gradient(oklch(100% 0 0) 0 0) 50% 50% / 2px 100% no-repeat;
+  pointer-events: none;
+  z-index: 1;
 }
 
 .led::after {

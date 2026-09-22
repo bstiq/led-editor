@@ -17,3 +17,31 @@ describe('led matrix rings', () => {
     expect(source).toContain('pointer-events: none')
   })
 })
+
+describe('led matrix shape placement', () => {
+  it('places shapes on click instead of dragging size', () => {
+    expect(source).toContain('createShapeLayer')
+    expect(source).toContain('toolWidth')
+    expect(source).toContain('toolHeight')
+    expect(source).not.toContain("mode: 'resize'")
+    expect(source).not.toContain('resizeLayer')
+  })
+})
+
+describe('led matrix move', () => {
+  it('places the selected layer origin on the clicked led', () => {
+    expect(source).toContain("tool === 'move'")
+    expect(source).toContain('moveLayerOrigin')
+    expect(source).toContain('cell.col')
+    expect(source).toContain('cell.row')
+    expect(source).not.toContain('deltaCol')
+    expect(source).not.toContain("mode: 'move'")
+  })
+
+  it('marks the origin led with a crosshair while move is active', () => {
+    expect(source).toContain('led--move-origin')
+    expect(source).toContain('originCol')
+    expect(source).toContain('originRow')
+    expect(source).toContain("activeTool.value !== 'move'")
+  })
+})

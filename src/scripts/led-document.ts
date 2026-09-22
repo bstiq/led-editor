@@ -1,10 +1,11 @@
 import { ref, computed } from 'vue'
 
+import { type FontSize } from './bitmap-font'
 import { type Rgb, UNLIT, rgb } from './color'
 import { LED_COLUMNS, LED_ROWS, overrideKey } from './led-matrix'
 
 export type LayerKind = 'background' | 'pixels' | 'circle' | 'square' | 'text'
-export type EditorTool = 'paint' | 'circle' | 'square' | 'text' | 'move' | 'resize'
+export type EditorTool = 'paint' | 'circle' | 'square' | 'text' | 'move'
 
 export interface Layer {
   id: string
@@ -17,6 +18,7 @@ export interface Layer {
   width: number
   height: number
   text: string
+  fontSize: FontSize
   overrides: Record<string, Rgb>
 }
 
@@ -36,6 +38,7 @@ function createBackgroundLayer(): Layer {
     width: LED_COLUMNS,
     height: LED_ROWS,
     text: '',
+    fontSize: 'medium',
     overrides: {},
   }
 }
@@ -45,6 +48,9 @@ export const selectedLayerId = ref<string>(BACKGROUND_ID)
 export const activeTool = ref<EditorTool>('paint')
 export const toolColor = ref<Rgb>(rgb(255, 0, 0))
 export const toolText = ref('HI')
+export const toolFontSize = ref<FontSize>('medium')
+export const toolWidth = ref(3)
+export const toolHeight = ref(3)
 
 export const selectedLayer = computed(() =>
   layers.value.find((layer) => layer.id === selectedLayerId.value) ?? layers.value[0],
@@ -90,11 +96,22 @@ export function resetDocument(): void {
   activeTool.value = 'paint'
   toolColor.value = rgb(255, 0, 0)
   toolText.value = 'HI'
+  toolFontSize.value = 'medium'
+  toolWidth.value = 3
+  toolHeight.value = 3
 }
 
 export function selectLayer(id: string): void {
-  if (findLayerIndex(id) === -1) return
+  const index = findLayerIndex(id)
+  if (index === -1) return
   selectedLayerId.value = id
+  const layer = layers.value[index]
+  if (
+    (layer.kind === 'circle' || layer.kind === 'square')
+    && (activeTool.value === 'circle' || activeTool.value === 'square')
+  ) {
+    activeTool.value = 'paint'
+  }
 }
 
 export function createPixelLayer(): Layer {
@@ -106,6 +123,7 @@ export function createPixelLayer(): Layer {
     width: 0,
     height: 0,
     text: '',
+    fontSize: 'medium',
     overrides: {},
   })
   layers.value = [...layers.value, layer]
@@ -128,6 +146,7 @@ export function createShapeLayer(
     width: Math.max(1, width),
     height: Math.max(1, height),
     text: '',
+    fontSize: 'medium',
     overrides: {},
   })
   layers.value = [...layers.value, layer]
@@ -144,6 +163,7 @@ export function createTextLayer(originCol: number, originRow: number, text: stri
     width: 0,
     height: 0,
     text,
+    fontSize: toolFontSize.value,
     overrides: {},
   })
   layers.value = [...layers.value, layer]
@@ -208,6 +228,16 @@ export function setLayerText(id: string, text: string): void {
   if (layer.kind !== 'text') return
   const next = [...layers.value]
   next[index] = { ...layer, text }
+  layers.value = next
+}
+
+export function setLayerFontSize(id: string, fontSize: FontSize): void {
+  const index = findLayerIndex(id)
+  if (index === -1) return
+  const layer = layers.value[index]
+  if (layer.kind !== 'text') return
+  const next = [...layers.value]
+  next[index] = { ...layer, fontSize }
   layers.value = next
 }
 

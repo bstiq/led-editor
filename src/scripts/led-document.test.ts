@@ -16,10 +16,15 @@ import {
   resizeLayer,
   selectLayer,
   selectedLayerId,
+  setActiveTool,
   setLayerColor,
+  setLayerFontSize,
   setLayerText,
   setLayerVisible,
   toolColor,
+  toolFontSize,
+  toolHeight,
+  toolWidth,
 } from './led-document'
 
 describe('led document', () => {
@@ -109,5 +114,41 @@ describe('led document', () => {
 
     selectLayer('background')
     expect(selectedLayerId.value).toBe('background')
+  })
+
+  it('defaults stamp size to 3x3 and resets it', () => {
+    toolWidth.value = 8
+    toolHeight.value = 9
+    resetDocument()
+    expect(toolWidth.value).toBe(3)
+    expect(toolHeight.value).toBe(3)
+  })
+
+  it('leaves stamp mode when selecting a shape', () => {
+    const circle = createShapeLayer('circle', 0, 0, 3, 3)
+    setActiveTool('square')
+    selectLayer(circle.id)
+    expect(selectedLayerId.value).toBe(circle.id)
+    expect(activeTool.value).toBe('paint')
+  })
+
+  it('keeps stamp mode when selecting a non-shape layer', () => {
+    createShapeLayer('circle', 0, 0, 3, 3)
+    setActiveTool('circle')
+    selectLayer('background')
+    expect(selectedLayerId.value).toBe('background')
+    expect(activeTool.value).toBe('circle')
+  })
+
+  it('stores the tool font size on new text layers and updates text layers only', () => {
+    toolFontSize.value = 'small'
+    const text = createTextLayer(0, 0, 'A')
+    expect(text.fontSize).toBe('small')
+
+    setLayerFontSize(text.id, 'large')
+    expect(layers.value.find((entry) => entry.id === text.id)?.fontSize).toBe('large')
+
+    setLayerFontSize('background', 'small')
+    expect(layers.value[0].fontSize).toBe('medium')
   })
 })

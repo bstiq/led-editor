@@ -18,10 +18,6 @@ function isBackground(layer: Layer): boolean {
   return layer.kind === 'background'
 }
 
-function canResize(layer: Layer): boolean {
-  return layer.kind === 'circle' || layer.kind === 'square'
-}
-
 function canMove(layer: Layer): boolean {
   return layer.kind !== 'background'
 }
@@ -33,11 +29,6 @@ function onColorInput(layer: Layer, value: string): void {
 function startMove(layer: Layer): void {
   selectLayer(layer.id)
   setActiveTool('move')
-}
-
-function startResize(layer: Layer): void {
-  selectLayer(layer.id)
-  setActiveTool('resize')
 }
 </script>
 
@@ -93,15 +84,6 @@ function startResize(layer: Layer): void {
             @click="startMove(layer)"
           >
             Move
-          </button>
-
-          <button
-            v-if="canResize(layer)"
-            type="button"
-            class="btn btn-ghost btn-xs"
-            @click="startResize(layer)"
-          >
-            Resize
           </button>
 
           <button

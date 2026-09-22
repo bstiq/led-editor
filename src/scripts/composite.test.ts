@@ -15,6 +15,7 @@ function layer(partial: Partial<Layer> & Pick<Layer, 'id' | 'kind'>): Layer {
     width: 1,
     height: 1,
     text: '',
+    fontSize: 'medium',
     overrides: {},
     ...partial,
   }

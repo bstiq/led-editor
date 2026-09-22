@@ -16,6 +16,7 @@ function baseLayer(partial: Partial<Layer> & Pick<Layer, 'kind'>): Layer {
     width: 1,
     height: 1,
     text: '',
+    fontSize: 'medium',
     overrides: {},
     ...partial,
   }
@@ -52,6 +53,13 @@ describe('rasterize', () => {
     layer.originCol = 3
     cells = rasterizeLayer(layer)
     expect(cells.find((cell) => cell.col === 5 && cell.row === 0)?.color).toEqual(rgb(0, 255, 0))
+  })
+
+  it('rasterizes text with the layer font size', () => {
+    const layer = baseLayer({ kind: 'text', text: '1', fontSize: 'small' })
+    const cells = rasterizeLayer(layer)
+    expect(cells).toContainEqual({ col: 1, row: 0, color: rgb(255, 0, 0) })
+    expect(cells.some((cell) => cell.col === 2 && cell.row === 0)).toBe(false)
   })
 
   it('covers only overrides for pixel layers', () => {

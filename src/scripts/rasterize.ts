@@ -46,7 +46,7 @@ function shapeCoverage(layer: Layer): CoveredCell[] {
 }
 
 function textCoverage(layer: Layer): CoveredCell[] {
-  return textPixels(layer.text)
+  return textPixels(layer.text, layer.fontSize)
     .map((pixel) => ({
       col: layer.originCol + pixel.col,
       row: layer.originRow + pixel.row,
