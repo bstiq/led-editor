@@ -1,0 +1,16 @@
+{
+  "version": 1,
+  "hooks": {
+    "afterFileEdit": [
+      {
+        "command": "node .cursor/hooks/scope-second-pass.mjs mark"
+      }
+    ],
+    "stop": [
+      {
+        "command": "node .cursor/hooks/scope-second-pass.mjs stop",
+        "loop_limit": 1
+      }
+    ]
+  }
+}

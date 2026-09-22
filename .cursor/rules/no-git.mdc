@@ -1,0 +1,22 @@
+---
+description: Never perform or assist with any git-related operations
+alwaysApply: true
+---
+
+# No Git
+
+Never handle anything git-related in this project.
+
+## Do not
+
+- Run git commands (`git status`, `git diff`, `git add`, `git commit`, `git push`, `git pull`, `git checkout`, `git branch`, `git merge`, `git rebase`, `git worktree`, etc.)
+- Create, amend, or suggest commits
+- Create or update pull requests / use `gh` for git workflow
+- Create or manage branches or worktrees
+- Offer git finish/merge/PR/discard menus or ask about committing
+
+## Do
+
+- Implement and verify code changes only
+- Leave all version control to the user
+- If a skill or plan step says to commit, push, PR, or manage branches — skip that step

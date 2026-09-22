@@ -1,0 +1,41 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap');
+@import "tailwindcss";
+@import "./themes/andromeda.css";
+@import "./themes/ayudark.css";
+@import "./themes/catppuccin.css";
+@import "./themes/everforest.css";
+@import "./themes/flexoki.css";
+@import "./themes/githubdark.css";
+@import "./themes/githublight.css";
+@import "./themes/gruvbox.css";
+@import "./themes/kanagawa.css";
+@import "./themes/monokai.css";
+@import "./themes/nightfox.css";
+@import "./themes/nightowl.css";
+@import "./themes/onedarkpro.css";
+@import "./themes/rosepine.css";
+@import "./themes/solarized.css";
+@import "./themes/tokyonight.css";
+@import "./themes/vscode.css";
+
+@plugin "daisyui" {
+    themes: light, dark, cupcake, bumblebee, emerald, corporate, synthwave, 
+    retro, cyberpunk, valentine, halloween, garden, forest, aqua, lofi, pastel, 
+    fantasy, wireframe, black, luxury, dracula, cmyk, autumn, business, acid, lemonade, 
+    night, coffee, winter, dim, nord, sunset, caramellatte, silk, abyss, andromeda, ayudark, 
+    catppuccin, everforest, flexoki, githubdark, githublight, gruvbox, kanagawa, monokai, nightfox, 
+    nightowl, onedarkpro, rosepine, solarized, tokyonight, vscode;
+}
+
+body {
+    font-family: 'DM Sans';
+}
+
+.main-content-wash {
+    background-color: var(--color-base-100);
+    background-image: radial-gradient(
+        ellipse 80% 50% at 50% 0%,
+        color-mix(in oklch, var(--color-base-content) 1.5%, var(--color-base-100)),
+        var(--color-base-100) 70%
+    );
+}

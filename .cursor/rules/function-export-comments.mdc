@@ -1,0 +1,51 @@
+---
+description: Require brief high-level comments above functions and exports
+globs: "**/*.{ts,tsx,vue,js,jsx}"
+alwaysApply: false
+---
+
+# Function / Export Comments
+
+When creating or substantially editing code, add a short comment block above each function and each export that explains, at a very high level, what it does and why it exists.
+
+## Requirements
+
+- Place 1–3 short comment lines immediately above the function or export
+- Cover **what** (purpose) and **why** (reason / role in the flow)
+- Keep comments high-level — do not narrate implementation details line by line
+- Prefer plain language over jargon when both are accurate
+- Apply to exported and non-exported functions, including Vue `script setup` helpers and composable/script utilities
+
+## Examples
+
+```typescript
+// Builds the keymap payload the keyboard expects so the UI can
+// write layer assignments without re-encoding keycodes elsewhere.
+export function buildKeymapPayload(layer: number, keys: number[]) {
+  // ...
+}
+```
+
+```typescript
+// Resolves a display label for a keycode so the keymap grid can
+// show human-readable names instead of raw IDs.
+function resolveKeyLabel(keycode: number): string {
+  // ...
+}
+```
+
+## Avoid
+
+```typescript
+// ❌ BAD — restates the code / too low-level
+// Loop through keys and push into array
+function collectKeys(keys: number[]) {
+  // ...
+}
+
+// ❌ BAD — missing why
+// Handles keycodes
+export function handleKeycode(code: number) {
+  // ...
+}
+```

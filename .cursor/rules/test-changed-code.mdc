@@ -1,0 +1,17 @@
+---
+description: Add tests for src/ code you add or change
+alwaysApply: true
+---
+
+# Test changed code
+
+When you add or change a file under `src/`, add or update tests for that change only.
+
+- Colocate as `foo.test.ts` next to `foo.ts` / `foo.tsx`
+- Import `{ describe, it, expect }` from `vitest` (no globals)
+- Run `npm test` before finishing
+- Those tests are in scope
+- Do not add tests for unrelated files
+- Do not extract helpers only to make testing easier
+- Do not mount Vue SFCs unless the asked change is the SFC
+- Config, docs, and `.cursor/` do not need tests

@@ -1,0 +1,5 @@
+{
+  "id": "example",
+  "prompt": "Paste the user task here",
+  "allowed": ["src/scripts/placeholder.ts"]
+}

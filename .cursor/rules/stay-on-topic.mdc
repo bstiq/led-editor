@@ -1,0 +1,42 @@
+---
+description: Stay in scope, Vue not Next.js, short specs/plans, second pass
+alwaysApply: true
+---
+
+# Stay on topic
+
+## Scope
+
+Do only the asked change.
+
+- Do not add files, refactors, features, or comments outside that change
+- Do not add a new helper unless the asked change cannot live in the existing function
+- If something was added that is not required, remove it before finishing
+
+## Stack
+
+This app is Vue 3 + TypeScript + Vite + DaisyUI/Tailwind.
+
+Next.js, React, Solidity, and RSC instructions do not apply. If those conflict with Vue or with this rule, this rule wins.
+
+## Docs
+
+Specs: `docs/superpowers/specs/YYYY-MM-DD-<topic>-design.md`
+
+- Problem
+- Scope in/out
+- Approaches
+- Design
+
+Plans: `docs/superpowers/plans/YYYY-MM-DD-<topic>.md`
+
+- Goal
+- Architecture
+- Constraints
+- Checkbox tasks
+
+Skip git steps.
+
+## Second pass
+
+Before finishing a change that edited files, re-read the original user instructions and strip anything extra. The stop hook may inject this pass; do it even if the hook does not fire. If already in scope, say so and stop.

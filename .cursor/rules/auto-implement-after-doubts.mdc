@@ -1,0 +1,45 @@
+---
+description: After clarifying doubts are confirmed, auto-approve design and plan, then implement (no git)
+alwaysApply: true
+---
+
+# Auto-Implement After Doubts Confirmed
+
+When using brainstorming / writing-plans / implementation skills, do not wait for separate approvals of the design doc or the plan once clarifying doubts are settled.
+
+## Trigger
+
+**Doubts confirmed** means the user has answered the clarifying questions (or explicitly said there are no further doubts / to proceed). That single confirmation is enough to continue the full pipeline.
+
+## Required flow (no extra gates)
+
+Once doubts are confirmed, in the same session and without asking again:
+
+1. **Design** — Write/finalize the design document (spec). Treat it as approved; do not pause for a separate “please review the spec” gate.
+2. **Plan** — Immediately write the implementation plan from that design. Treat the plan as approved; do not pause for a separate “ready to implement?” gate.
+3. **Implement** — Immediately start implementing per the plan (e.g. executing-plans or subagent-driven-development as appropriate).
+
+## Do not
+
+- Ask for a second confirmation of the design after doubts are already confirmed
+- Ask for a third confirmation of the plan before coding
+- Stop between design → plan → implement unless a new ambiguity appears that must be resolved
+- Do any git work (see `no-git.mdc`): skip commits, branches, PRs, and any skill step that is git-only
+
+## Do
+
+- Still ask clarifying questions **before** doubts are confirmed (one at a time when brainstorming)
+- If new blocking ambiguity appears mid-design, mid-plan, or mid-implement, stop and resolve it — then resume auto-advance from that point
+- Save design/plan docs to the usual locations when those skills apply; just do not wait on extra approval rounds
+- Prefer implementing in the current workspace; leave version control entirely to the user
+
+## Example
+
+```
+User answers final clarifying question (or: "looks good, no more doubts")
+→ Write design doc
+→ Write implementation plan
+→ Start coding immediately
+→ Never ask "should I write the plan?" or "should I start implementing?"
+→ Never commit / push / open a PR
+```
